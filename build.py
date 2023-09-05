@@ -12,7 +12,7 @@ def build_dockerfile(sha256, version, tags):
     build_dir = tempfile.mktemp()
     shutil.copytree("docker", build_dir)
 
-    build_command = ["docker", "build", "--build-arg", f"VERSION={version}",
+    build_command = ["docker", "build", "--format=docker", "--build-arg", f"VERSION={version}",
                      "--build-arg", f"SHA256={sha256}", "."]
     for tag in tags:
         build_command.extend(["-t", f"factoriotools/factorio:{tag}"])

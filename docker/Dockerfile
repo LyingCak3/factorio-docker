@@ -2,10 +2,10 @@ FROM frolvlad/alpine-glibc:alpine-3.12
 
 LABEL maintainer="https://github.com/factoriotools/factorio-docker"
 
-ARG USER=factorio
-ARG GROUP=factorio
-ARG PUID=845
-ARG PGID=845
+ARG USER=root
+ARG GROUP=root
+ARG PUID=0
+ARG PGID=0
 
 # version checksum of the archive to download
 ARG VERSION
@@ -48,8 +48,6 @@ RUN set -ox pipefail \
     && ln -s "$SCENARIOS" /opt/factorio/scenarios \
     && ln -s "$SAVES" /opt/factorio/saves \
     && mkdir -p /opt/factorio/config/ \
-    && addgroup -g "$PGID" -S "$GROUP" \
-    && adduser -u "$PUID" -G "$GROUP" -s /bin/sh -SDH "$USER" \
     && chown -R "$USER":"$GROUP" /opt/factorio /factorio
 
 COPY files/*.sh /

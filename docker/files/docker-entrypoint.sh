@@ -44,13 +44,9 @@ if [[ ${UPDATE_MODS_ON_START:-} == "true" ]]; then
 fi
 
 if [[ $(id -u) = 0 ]]; then
-  # Update the User and Group ID based on the PUID/PGID variables
-  usermod -o -u "$PUID" factorio
-  groupmod -o -g "$PGID" factorio
-  # Take ownership of factorio data if running as root
-  chown -R factorio:factorio "$FACTORIO_VOL"
-  # Drop to the factorio user
-  SU_EXEC="su-exec factorio"
+  echo "Running as root with a rooted container is dangerous!!"
+  echo "This should only be done with running with a rootless container"
+  SU_EXEC=""
 else
   SU_EXEC=""
 fi

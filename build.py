@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import json
 import subprocess
@@ -35,18 +36,29 @@ def login():
         exit(1)
 
 
-def main(push_tags=False):
+def main(sargs):
     with open(os.path.join(os.path.dirname(__file__), "buildinfo.json")) as file_handle:
         builddata = json.load(file_handle)
 
-    if push_tags:
+    avail_tags = [ tag for builditem in builddata.values() for tag in builditem["tags"] ]
+
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument("--push-tags", action="store_true", dest="push_tags", help="Push tags to docker repo.", default=False)
+    parser.add_argument("--tags", nargs="+", default=avail_tags, help="Tags to build [Default: %(default)s]")
+
+    args = parser.parse_args(args=sargs)
+
+    if args.push_tags:
         login()
 
     for version, buildinfo in builddata.items():
         sha256 = buildinfo["sha256"]
-        tags = buildinfo["tags"]
+        tags = [ tag for tag in buildinfo["tags"] if tag in args.tags ]
+        if 0 == len(tags):
+            continue
         build_dockerfile(sha256, version, tags)
-        if not push_tags:
+        if not args.push_tags:
             continue
         for tag in tags:
             try:
@@ -58,5 +70,4 @@ def main(push_tags=False):
 
 
 if __name__ == '__main__':
-    push_tags = len(sys.argv) > 1 and sys.argv[1] == "--push-tags"
-    main(push_tags)
+    main(sys.argv[1:])
